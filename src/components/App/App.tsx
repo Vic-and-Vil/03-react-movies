@@ -15,7 +15,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [selected, setSelected] = useState<Movie | null>(null);
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
 
   const handleSearch = async (query: string) => {
     try {
