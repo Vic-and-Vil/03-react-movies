@@ -5,7 +5,7 @@ import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 import { fetchMovies } from "../../services/movieService";
-import type { Movie } from "../../types/movie";
+import type { Movie, MovieResponse } from "../../types/movie";
 import { Toaster, toast } from "react-hot-toast";
 
 import styles from "./App.module.css";
@@ -15,20 +15,22 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [selected, setSelected] = useState<Movie | null>(null);
+  const [page, setPage] = useState(1);
 
   const handleSearch = async (query: string) => {
     try {
       setLoading(true);
       setError(null);
       setMovies([]);
+      setPage(1);
 
-      const results = await fetchMovies(query);
+      const response: MovieResponse = await fetchMovies(query, 1);
 
-      if (results.length === 0) {
+      if (response.results.length === 0) {
         toast.error("No movies found for your request.");
       }
 
-      setMovies(results);
+      setMovies(response.results);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error"));
     } finally {
@@ -47,7 +49,7 @@ export default function App() {
       <main className={styles.main}>
         {loading && <Loader />}
         {!loading && error && <ErrorMessage />}
-        {!loading && !error && (
+        {!loading && !error && movies.length > 0 && (
           <MovieGrid movies={movies} onSelect={setSelected} />
         )}
       </main>
