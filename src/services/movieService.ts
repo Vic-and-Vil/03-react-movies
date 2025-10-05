@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from 'axios';
-import { Movie } from '../types/movie';
+import axios, { type AxiosResponse } from 'axios';
+import type { Movie } from '../types/movie';
 
 const BASE_URL = 'https://example.com/api/movies'; // <-- twój backend
 const token = import.meta.env.VITE_MOVIE_TOKEN;    // <-- dynamiczny token
@@ -13,10 +13,9 @@ const api = axios.create({
 
 export interface MovieResponse {
   page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-  data: Movie[];
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
 }
 
 export const fetchMovies = async (
