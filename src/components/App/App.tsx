@@ -15,30 +15,21 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [selected, setSelected] = useState<Movie | null>(null);
-  const [page, setPage] = useState<number>(1);
 
   const handleSearch = async (query: string) => {
     try {
       setLoading(true);
       setError(null);
       setMovies([]);
-      // ustawiamy stan strony - ale do fetch używamy bezpośrednio literału 1,
-      // żeby nie polegać na asynchronicznej aktualizacji stanu
-      setPage(1);
 
-      // UWAGA: fetchMovies oczekuje najpierw page: number, potem search: string
-      const response: MovieResponse = await fetchMovies(1, query);
+      // Poprawne wywołanie: (page, perPage, search)
+      const response: MovieResponse = await fetchMovies(1, 12, query);
 
-      // bezpieczeństwo: upewnijmy się, że results to tablica
-      const results = Array.isArray((response as any).results)
-        ? (response as any).results
-        : [];
-
-      if (results.length === 0) {
+      if (!response.data || response.data.length === 0) {
         toast.error("No movies found for your request.");
       }
 
-      setMovies(results as Movie[]);
+      setMovies(response.data);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error"));
     } finally {
@@ -46,9 +37,7 @@ export default function App() {
     }
   };
 
-  const closeModal = () => {
-    setSelected(null);
-  };
+  const closeModal = () => setSelected(null);
 
   return (
     <>
