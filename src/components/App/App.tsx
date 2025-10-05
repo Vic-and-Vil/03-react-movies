@@ -22,14 +22,14 @@ export default function App() {
       setError(null);
       setMovies([]);
 
-      // Poprawne wywołanie: (page, perPage, search)
+      // fetchMovies(page, perPage, search)
       const response: MovieResponse = await fetchMovies(1, 12, query);
 
-      if (!response.data || response.data.length === 0) {
+      if (!response.results || response.results.length === 0) {
         toast.error("No movies found for your request.");
       }
 
-      setMovies(response.data);
+      setMovies(response.results);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error"));
     } finally {
