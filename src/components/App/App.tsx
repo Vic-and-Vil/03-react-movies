@@ -1,12 +1,13 @@
 import { useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
+
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
-import { fetchMovies, type MovieResponse } from "../../services/movieService";
-import type { Movie } from "../../types/movie";
-import { Toaster, toast } from "react-hot-toast";
+
+import { fetchMovies, type MovieResponse, type Movie } from "../../services/movieService";
 
 import styles from "./App.module.css";
 
@@ -15,21 +16,24 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [selected, setSelected] = useState<Movie | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const handleSearch = async (query: string) => {
     try {
       setLoading(true);
       setError(null);
       setMovies([]);
+      setPage(1);
 
-      // fetchMovies(page, perPage, search)
-      const response: MovieResponse = await fetchMovies(1, 12, query);
+      const data: MovieResponse = await fetchMovies(query, 1);
 
-      if (!response.results || response.results.length === 0) {
+      if (data.results.length === 0) {
         toast.error("No movies found for your request.");
       }
 
-      setMovies(response.results);
+      setMovies(data.results);
+      setTotalPages(data.total_pages);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error"));
     } finally {
@@ -37,7 +41,25 @@ export default function App() {
     }
   };
 
-  const closeModal = () => setSelected(null);
+  const handlePageChange = async (newPage: number, query: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data: MovieResponse = await fetchMovies(query, newPage);
+
+      setMovies(data.results);
+      setPage(newPage);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Unknown error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const closeModal = () => {
+    setSelected(null);
+  };
 
   return (
     <>
@@ -45,9 +67,24 @@ export default function App() {
 
       <main className={styles.main}>
         {loading && <Loader />}
-        {!loading && error && <ErrorMessage />}
-        {!loading && !error && movies.length > 0 && (
+        {!loading && error && <ErrorMessage message={error.message} />}
+        {!loading && !error && (
           <MovieGrid movies={movies} onSelect={setSelected} />
+        )}
+
+        {/* Пагінація (тільки якщо більше 1 сторінки) */}
+        {totalPages > 1 && (
+          <div className={styles.paginationContainer}>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1, "")}
+                className={`${styles.pageBtn} ${page === i + 1 ? styles.active : ""}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
         )}
       </main>
 
