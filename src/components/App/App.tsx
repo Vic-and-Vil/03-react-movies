@@ -72,7 +72,7 @@ export default function App() {
           <MovieGrid movies={movies} onSelect={setSelected} />
         )}
 
-        {/* Пагінація (тільки якщо більше 1 сторінки) */}
+        {/* Пагінація (тільки якщо більше 1 сторінки)
         {totalPages > 1 && (
           <div className={styles.paginationContainer}>
             {Array.from({ length: totalPages }, (_, i) => (
@@ -85,7 +85,7 @@ export default function App() {
               </button>
             ))}
           </div>
-        )}
+        )} */}
       </main>
 
       {selected && <MovieModal movie={selected} onClose={closeModal} />}

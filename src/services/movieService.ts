@@ -20,3 +20,5 @@ export async function fetchMovies(query: string, page: number): Promise<MovieRes
   });
   return response.data;
 }
+
+
