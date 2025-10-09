@@ -16,16 +16,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [selected, setSelected] = useState<Movie | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
 
   const handleSearch = async (query: string) => {
     try {
       setLoading(true);
       setError(null);
       setMovies([]);
-      setPage(1);
-
+      
       const data: MovieResponse = await fetchMovies(query, 1);
 
       if (data.results.length === 0) {
@@ -33,7 +30,6 @@ export default function App() {
       }
 
       setMovies(data.results);
-      setTotalPages(data.total_pages);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error"));
     } finally {
@@ -41,21 +37,21 @@ export default function App() {
     }
   };
 
-  const handlePageChange = async (newPage: number, query: string) => {
-    try {
-      setLoading(true);
-      setError(null);
+  // const handlePageChange = async (newPage: number, query: string) => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
 
-      const data: MovieResponse = await fetchMovies(query, newPage);
+  //     const data: MovieResponse = await fetchMovies(query, newPage);
 
-      setMovies(data.results);
-      setPage(newPage);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error("Unknown error"));
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     setMovies(data.results);
+  //     setPage(newPage);
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err : new Error("Unknown error"));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const closeModal = () => {
     setSelected(null);
